@@ -200,6 +200,11 @@ export function useEscrow() {
       undefined, 'Triggering timeout release…', 'Timeout release executed!'),
   [sendTx])
 
+  const checkAndTriggerTimeout = useCallback((escrowId: bigint, milestoneIndex: bigint) =>
+    sendTx('checkAndTriggerTimeout', [escrowId, milestoneIndex],
+      undefined, 'Checking deadline…', 'DeadlineReached emitted — Reactivity will auto-release!'),
+  [sendTx])
+
   return {
     isTxPending,
     getEscrow,
@@ -214,5 +219,6 @@ export function useEscrow() {
     resolveDispute,
     releaseFunds,
     executeTimeoutRelease,
+    checkAndTriggerTimeout,
   }
 }

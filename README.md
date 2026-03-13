@@ -8,6 +8,47 @@ ReactEscrow lets a client lock funds on-chain for a freelancer across multiple m
 
 ---
 
+## Demo Video
+
+> **TODO:** Replace this placeholder with the actual demo video link after recording.
+
+<!-- Record a 2-5 min screen capture showing:
+     1. Connect MetaMask to Somnia Testnet
+     2. Create an escrow (freelancer + arbiter + 1 milestone)
+     3. Deposit funds → escrow goes Active
+     4. (Freelancer wallet) Submit milestone
+     5. (Client wallet) Approve milestone
+     6. Watch ReactiveHandlers auto-release funds on-chain (no user action needed)
+     7. Show live event feed updating in real-time
+-->
+
+**[▶ Watch Demo](YOUR_VIDEO_URL_HERE)** ← replace with YouTube / Loom link
+
+---
+
+## How It Works
+
+Traditional escrow requires someone to manually release funds after approval — a middleman, a cron job, or the user pressing "Release" a second time. ReactEscrow eliminates that entirely using **Somnia Native Reactivity**.
+
+**End-to-end flow:**
+
+1. **Client creates an escrow** — sets milestones (description, STT amount, deadline) and locks funds in the smart contract.
+2. **Freelancer submits work** — marks the milestone as submitted when the deliverable is ready.
+3. **Client approves** — one click. The contract emits a `MilestoneApproved` event on-chain.
+4. **Somnia validators detect the event** — because `ReactiveHandlers.sol` is a registered subscriber via the Somnia Reactivity precompile (`0x0100`). No keeper bot, no oracle, no polling.
+5. **Funds auto-release** — validators atomically call `ReactiveHandlers._onEvent()` → `ReactEscrow.releaseMilestoneFunds()`. The freelancer receives payment in the same block as the approval.
+6. **Frontend updates in real-time** — the off-chain `reactive-service` subscribes to the same events via Somnia's WebSocket SDK and pushes live updates to the browser. The event feed and escrow detail auto-refresh.
+
+The same reactive pattern handles disputes (arbiter resolves → `DisputeResolved` → funds distributed instantly) and missed deadlines (`DeadlineReached` → timeout auto-release).
+
+> Somnia Reactivity is not a webhook or an oracle. It is a validator-enforced, on-chain primitive — the callback is atomic with the triggering transaction, with no trusted intermediary.
+
+**Reactivity is used in two ways:**
+- **On-chain** — `ReactiveHandlers.sol` auto-executes fund releases via validator callbacks
+- **Off-chain** — `reactive-service` streams live event data to the frontend via the Somnia SDK WebSocket
+
+---
+
 ## Live Deployment (Somnia Testnet)
 
 | Contract | Address |

@@ -99,7 +99,13 @@ function MilestoneActions({
       label: 'Release Funds', action: 'release', variant: 'btn-secondary',
       condition: isClient && escrowActive && isCurrent && s === MilestoneStatus.Approved,
     },
-    // Anyone: timeout release if deadline passed + approved
+    // Anyone: trigger timeout on a Pending milestone whose deadline passed
+    // → emits DeadlineReached → Reactivity auto-calls executeTimeoutRelease
+    {
+      label: 'Trigger Deadline (Reactivity)', action: 'triggerTimeout', variant: 'btn-secondary',
+      condition: escrowActive && isCurrent && s === MilestoneStatus.Pending && isExpired(milestone.deadline),
+    },
+    // Anyone: direct timeout release if deadline passed + already approved
     {
       label: 'Trigger Timeout Release', action: 'timeout', variant: 'btn-secondary',
       condition: escrowActive && isCurrent && s === MilestoneStatus.Approved && isExpired(milestone.deadline),
@@ -234,7 +240,7 @@ export default function EscrowDetail() {
     isTxPending,
     getEscrow, getMilestones,
     depositFunds, submitMilestone, approveMilestone,
-    raiseDispute, resolveDispute, releaseFunds, executeTimeoutRelease,
+    raiseDispute, resolveDispute, releaseFunds, executeTimeoutRelease, checkAndTriggerTimeout,
   } = useEscrow()
 
   const { subscribe } = useReactivity()
@@ -302,6 +308,9 @@ export default function EscrowDetail() {
           break
         case 'release':
           hash = await releaseFunds(escrowId, midx)
+          break
+        case 'triggerTimeout':
+          hash = await checkAndTriggerTimeout(escrowId, midx)
           break
         case 'timeout':
           hash = await executeTimeoutRelease(escrowId, midx)
