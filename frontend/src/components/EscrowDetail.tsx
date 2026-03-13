@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { formatEther } from 'viem'
 import { useWallet } from '../hooks/useWallet'
 import { useEscrow, type EscrowData, type MilestoneData } from '../hooks/useEscrow'
+import { useReactivity } from '../hooks/useReactivity'
 import {
   EscrowStatus, MilestoneStatus,
   ESCROW_STATUS_LABELS, MILESTONE_STATUS_LABELS,
@@ -241,11 +242,14 @@ export default function EscrowDetail() {
     raiseDispute, resolveDispute, releaseFunds, executeTimeoutRelease,
   } = useEscrow()
 
-  const [escrow,     setEscrow]     = useState<EscrowData | null>(null)
-  const [milestones, setMilestones] = useState<MilestoneData[]>([])
-  const [loading,    setLoading]    = useState(true)
-  const [error,      setError]      = useState<string | null>(null)
-  const [lastTxHash, setLastTxHash] = useState<string | null>(null)
+  const { subscribe } = useReactivity()
+
+  const [escrow,      setEscrow]      = useState<EscrowData | null>(null)
+  const [milestones,  setMilestones]  = useState<MilestoneData[]>([])
+  const [loading,     setLoading]     = useState(true)
+  const [error,       setError]       = useState<string | null>(null)
+  const [lastTxHash,  setLastTxHash]  = useState<string | null>(null)
+  const [autoUpdated, setAutoUpdated] = useState(false)
 
   const escrowId = id ? BigInt(id) : null
 
@@ -263,6 +267,18 @@ export default function EscrowDetail() {
   }, [escrowId, getEscrow, getMilestones])
 
   useEffect(() => { reload() }, [reload])
+
+  // Auto-reload when Somnia Reactivity pushes an event for this escrow
+  useEffect(() => {
+    if (!id) return
+    return subscribe((event) => {
+      if (event.escrowId === id) {
+        reload()
+        setAutoUpdated(true)
+        setTimeout(() => setAutoUpdated(false), 3000)
+      }
+    })
+  }, [id, subscribe, reload])
 
   // ── Roles ──────────────────────────────────────────────────────────────────
   const addrLower = address?.toLowerCase() ?? ''
@@ -395,6 +411,17 @@ export default function EscrowDetail() {
           >
             {isTxPending ? 'Depositing…' : `Deposit ${parseFloat(formatEther(escrow.totalAmount)).toFixed(4)} STT`}
           </button>
+        </div>
+      )}
+
+      {/* Reactive auto-update flash */}
+      {autoUpdated && (
+        <div
+          className="rounded-xl px-4 py-2 text-xs flex items-center gap-2 transition-opacity"
+          style={{ backgroundColor: 'rgba(255,107,0,0.06)', border: '1px solid rgba(255,107,0,0.2)', color: '#ff8c24' }}
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse flex-shrink-0" />
+          Auto-updated via Somnia Reactivity
         </div>
       )}
 

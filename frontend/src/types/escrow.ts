@@ -53,13 +53,13 @@ export type ReactiveEventType =
 export interface ReactiveEvent {
   id: string // random uuid for React key
   type: ReactiveEventType
-  escrowId: bigint
-  milestoneIndex?: bigint
-  amount?: bigint
+  escrowId: string          // uint256 as decimal string (JSON wire format)
+  milestoneIndex?: string   // uint256 as decimal string
+  amount?: string           // uint256 wei as decimal string
   address?: string
   resolution?: number
-  timestamp: number // Date.now()
-  blockNumber?: bigint
+  timestamp: number         // Date.now()
+  blockNumber?: string      // uint256 as decimal string
   raw: {
     topics: string[]
     data: string

@@ -1,10 +1,12 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { formatEther } from 'viem'
 import { useWallet } from '../hooks/useWallet'
 import { useEscrow, type EscrowData } from '../hooks/useEscrow'
+import { useReactivity } from '../hooks/useReactivity'
 import { EscrowStatus, ESCROW_STATUS_LABELS } from '../types/escrow'
 import { getExplorerAddressUrl } from '../lib/somnia'
+import LiveEventFeed from './LiveEventFeed'
 
 // ── Status badge ──────────────────────────────────────────────────────────────
 function StatusBadge({ status }: { status: EscrowStatus }) {
@@ -130,6 +132,7 @@ type EscrowWithCount = EscrowData & { milestoneCount: number }
 export default function EscrowDashboard() {
   const { address } = useWallet()
   const { getEscrow, getMilestones, getEscrowsByClient, getEscrowsByFreelancer } = useEscrow()
+  const { subscribe } = useReactivity()
 
   const [clientEscrows,    setClientEscrows]    = useState<EscrowWithCount[]>([])
   const [freelancerEscrows,setFreelancerEscrows] = useState<EscrowWithCount[]>([])
@@ -158,7 +161,7 @@ export default function EscrowDashboard() {
     }
   }, [getEscrow, getMilestones])
 
-  useEffect(() => {
+  const loadAll = useCallback(() => {
     if (!address) return
     const addr = address as `0x${string}`
     setError(null)
@@ -173,6 +176,23 @@ export default function EscrowDashboard() {
       .then(ids => loadEscrows(ids, setFreelancerEscrows, setLoadingFreelancer))
       .catch(e => { setError(e.message); setLoadingFreelancer(false) })
   }, [address, getEscrowsByClient, getEscrowsByFreelancer, loadEscrows])
+
+  useEffect(() => { loadAll() }, [loadAll])
+
+  // Build a set of escrow IDs we're watching so reactive events trigger targeted reloads
+  const watchedIds = useMemo(
+    () => new Set([...clientEscrows, ...freelancerEscrows].map(e => e.id.toString())),
+    [clientEscrows, freelancerEscrows],
+  )
+
+  // Auto-reload affected escrow when Somnia Reactivity pushes an event
+  useEffect(() => {
+    return subscribe((event) => {
+      if (watchedIds.has(event.escrowId) || event.type === 'EscrowCreated') {
+        loadAll()
+      }
+    })
+  }, [watchedIds, subscribe, loadAll])
 
   // ── Stats ──────────────────────────────────────────────────────────────────
   const all = [...clientEscrows, ...freelancerEscrows]
@@ -265,6 +285,11 @@ export default function EscrowDashboard() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Live Somnia Reactivity feed */}
+      <div className="pt-2" style={{ borderTop: '1px solid #1c1c1c' }}>
+        <LiveEventFeed />
       </div>
     </div>
   )
