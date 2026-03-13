@@ -1,0 +1,47 @@
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Node
+node_modules/
+frontend/node_modules/
+reactive-service/node_modules/
+
+# Hardhat
+artifacts/
+cache/
+typechain-types/
+dist/
+
+# Frontend build
+frontend/dist/
+frontend/.vite/
+
+# Reactive service build
+reactive-service/dist/
+
+# Coverage
+coverage/
+coverage.json
+
+# Hardhat deployment records
+deployments/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.claude

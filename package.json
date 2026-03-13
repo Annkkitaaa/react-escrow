@@ -1,0 +1,30 @@
+{
+  "name": "react-escrow",
+  "version": "1.0.0",
+  "description": "Reactive Milestone-Based Escrow Protocol on Somnia Testnet",
+  "private": true,
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:local": "hardhat run scripts/deploy.ts",
+    "deploy:testnet": "hardhat run scripts/deploy.ts --network somniaTestnet",
+    "setup-subscriptions": "hardhat run scripts/setup-subscriptions.ts --network somniaTestnet",
+    "seed": "hardhat run scripts/seed.ts --network somniaTestnet",
+    "node": "hardhat node",
+    "frontend": "cd frontend && npm run dev",
+    "reactive-service": "cd reactive-service && npm run dev"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/node": "^20.0.0",
+    "hardhat": "^2.22.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0",
+    "@somnia-chain/reactivity-contracts": "^0.1.6",
+    "dotenv": "^17.3.1",
+    "viem": "^2.0.0"
+  }
+}
