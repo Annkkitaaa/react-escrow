@@ -53,8 +53,8 @@ The same reactive pattern handles disputes (arbiter resolves → `DisputeResolve
 
 | Contract | Address |
 |---|---|
-| ReactEscrow | [`0x64f0d037a4F4B46A9F11E01c2144b042bF638F76`](https://shannon-explorer.somnia.network/address/0x64f0d037a4F4B46A9F11E01c2144b042bF638F76) |
-| ReactiveHandlers | [`0x472E9A6eC84ad6eA1EE7F816c7dE92530Eb67d33`](https://shannon-explorer.somnia.network/address/0x472E9A6eC84ad6eA1EE7F816c7dE92530Eb67d33) |
+| ReactEscrow | [`0xbf8f142b2eb8eB79c98296CB1dC58Cb2c7885f5B`](https://shannon-explorer.somnia.network/address/0xbf8f142b2eb8eB79c98296CB1dC58Cb2c7885f5B) |
+| ReactiveHandlers | [`0xfBF46805a3F3AFD485232b441E8E88E19c7dd06F`](https://shannon-explorer.somnia.network/address/0xfBF46805a3F3AFD485232b441E8E88E19c7dd06F) |
 
 - **Network:** Somnia Testnet (Shannon) · Chain ID `50312` · Currency `STT`
 - **Explorer:** https://shannon-explorer.somnia.network
@@ -324,8 +324,8 @@ npm test
 
 | | |
 |---|---|
-| ReactEscrow on Explorer | https://shannon-explorer.somnia.network/address/0x64f0d037a4F4B46A9F11E01c2144b042bF638F76 |
-| ReactiveHandlers on Explorer | https://shannon-explorer.somnia.network/address/0x472E9A6eC84ad6eA1EE7F816c7dE92530Eb67d33 |
+| ReactEscrow on Explorer | https://shannon-explorer.somnia.network/address/0xbf8f142b2eb8eB79c98296CB1dC58Cb2c7885f5B |
+| ReactiveHandlers on Explorer | https://shannon-explorer.somnia.network/address/0xfBF46805a3F3AFD485232b441E8E88E19c7dd06F |
 | Somnia Testnet Faucet | https://testnet.somnia.network |
 | Somnia Explorer | https://shannon-explorer.somnia.network |
 

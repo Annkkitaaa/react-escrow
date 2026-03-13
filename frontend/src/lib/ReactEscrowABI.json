@@ -178,6 +178,19 @@
         "type": "uint256"
       }
     ],
+    "name": "EscrowCancelled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      }
+    ],
     "name": "EscrowCompleted",
     "type": "event"
   },
@@ -320,6 +333,19 @@
       }
     ],
     "name": "approveMilestone",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      }
+    ],
+    "name": "cancelEscrow",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

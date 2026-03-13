@@ -205,6 +205,11 @@ export function useEscrow() {
       undefined, 'Checking deadline…', 'DeadlineReached emitted — Reactivity will auto-release!'),
   [sendTx])
 
+  const cancelEscrow = useCallback((escrowId: bigint) =>
+    sendTx('cancelEscrow', [escrowId],
+      undefined, 'Cancelling escrow…', 'Escrow cancelled.'),
+  [sendTx])
+
   return {
     isTxPending,
     getEscrow,
@@ -220,5 +225,6 @@ export function useEscrow() {
     releaseFunds,
     executeTimeoutRelease,
     checkAndTriggerTimeout,
+    cancelEscrow,
   }
 }

@@ -248,6 +248,7 @@ export default function EscrowDetail() {
     getEscrow, getMilestones,
     depositFunds, submitMilestone, approveMilestone,
     raiseDispute, resolveDispute, releaseFunds, executeTimeoutRelease, checkAndTriggerTimeout,
+    cancelEscrow,
   } = useEscrow()
 
   const { subscribe } = useReactivity()
@@ -334,6 +335,9 @@ export default function EscrowDetail() {
           break
         case 'resolve':
           hash = await resolveDispute(escrowId, midx, resolution ?? 0)
+          break
+        case 'cancel':
+          hash = await cancelEscrow(escrowId)
           break
         default:
           return
@@ -425,13 +429,22 @@ export default function EscrowDetail() {
           <p className="text-xs text-gray-400 mb-3">
             Lock {parseFloat(formatEther(escrow.totalAmount)).toFixed(4)} STT to start the work.
           </p>
-          <button
-            disabled={isTxPending}
-            onClick={() => handleAction('deposit', 0)}
-            className="btn-primary text-sm"
-          >
-            {isTxPending ? 'Depositing…' : `Deposit ${parseFloat(formatEther(escrow.totalAmount)).toFixed(4)} STT`}
-          </button>
+          <div className="flex gap-2 flex-wrap">
+            <button
+              disabled={isTxPending}
+              onClick={() => handleAction('deposit', 0)}
+              className="btn-primary text-sm"
+            >
+              {isTxPending ? 'Depositing…' : `Deposit ${parseFloat(formatEther(escrow.totalAmount)).toFixed(4)} STT`}
+            </button>
+            <button
+              disabled={isTxPending}
+              onClick={() => handleAction('cancel', 0)}
+              className="btn-danger text-sm"
+            >
+              Cancel Escrow
+            </button>
+          </div>
         </div>
       )}
 

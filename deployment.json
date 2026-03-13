@@ -3,8 +3,8 @@
   "chainId": "50312",
   "deployer": "0x984a1dB53b989fd3977bf07EF4cae068BDE17bd4",
   "contracts": {
-    "ReactEscrow": "0x64f0d037a4F4B46A9F11E01c2144b042bF638F76",
-    "ReactiveHandlers": "0x472E9A6eC84ad6eA1EE7F816c7dE92530Eb67d33"
+    "ReactEscrow": "0xbf8f142b2eb8eB79c98296CB1dC58Cb2c7885f5B",
+    "ReactiveHandlers": "0xfBF46805a3F3AFD485232b441E8E88E19c7dd06F"
   },
-  "deployedAt": "2026-03-13T18:03:31.613Z"
+  "deployedAt": "2026-03-13T19:39:08.053Z"
 }
