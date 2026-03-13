@@ -5,7 +5,7 @@
   "description": "Off-chain Somnia Reactivity listener — forwards push events to frontend",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "ts-node --esm src/index.ts",
+    "dev": "node -r ts-node/register src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js"
   },
