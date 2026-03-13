@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { formatEther } from 'viem'
 import { useWallet } from '../hooks/useWallet'
@@ -215,6 +215,13 @@ function MilestoneRow({
             )}
           </div>
 
+          {/* Submitted + expired — clarify that work was done, client action needed */}
+          {s === MilestoneStatus.Submitted && isExpired(milestone.deadline) && (
+            <p className="text-xs mt-1.5" style={{ color: '#f59e0b' }}>
+              Work was submitted before the deadline. Client can still approve or raise a dispute.
+            </p>
+          )}
+
           <MilestoneActions
             escrow={escrow}
             milestone={milestone}
@@ -252,7 +259,10 @@ export default function EscrowDetail() {
   const [lastTxHash,  setLastTxHash]  = useState<string | null>(null)
   const [autoUpdated, setAutoUpdated] = useState(false)
 
-  const escrowId = id ? BigInt(id) : null
+  const escrowId = useMemo(() => {
+    try { return id ? BigInt(id) : null }
+    catch { return null }
+  }, [id])
 
   const reload = useCallback(async () => {
     if (!escrowId) return
@@ -268,6 +278,13 @@ export default function EscrowDetail() {
   }, [escrowId, getEscrow, getMilestones])
 
   useEffect(() => { reload() }, [reload])
+
+  // Refresh when user returns to this tab (stale data prevention)
+  useEffect(() => {
+    const onFocus = () => { void reload() }
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
+  }, [reload])
 
   // Auto-reload when Somnia Reactivity pushes an event for this escrow
   useEffect(() => {

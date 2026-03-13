@@ -142,12 +142,20 @@ export default function CreateEscrow() {
     if (err) { setValidationError(err); return }
     setValidationError(null)
 
+    // Parse amounts separately so precision errors show as validation messages, not toasts
+    let inputs: MilestoneInput[] = []
     try {
-      const inputs: MilestoneInput[] = milestones.map(m => ({
+      inputs = milestones.map(m => ({
         description: m.description.trim(),
         amount:      parseEther(m.amountEth),
         deadline:    BigInt(Math.floor(new Date(m.deadlineDate).getTime() / 1000)),
       }))
+    } catch {
+      setValidationError('Invalid amount — check decimal precision (max 18 decimal places)')
+      return
+    }
+
+    try {
       await createEscrow(freelancer as `0x${string}`, arbiter as `0x${string}`, inputs)
       navigate('/dashboard')
     } catch {

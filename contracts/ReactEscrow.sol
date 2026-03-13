@@ -153,6 +153,15 @@ contract ReactEscrow is IReactEscrow, ReentrancyGuard {
     }
 
     /// @inheritdoc IReactEscrow
+    function cancelEscrow(uint256 escrowId) external escrowExists(escrowId) {
+        EscrowData storage escrow = _escrows[escrowId];
+        if (msg.sender != escrow.client) revert NotClient();
+        if (escrow.status != EscrowStatus.Created) revert WrongStatus();
+        escrow.status = EscrowStatus.Cancelled;
+        emit EscrowCancelled(escrowId);
+    }
+
+    /// @inheritdoc IReactEscrow
     function depositFunds(uint256 escrowId) external payable escrowExists(escrowId) {
         EscrowData storage escrow = _escrows[escrowId];
         if (msg.sender != escrow.client) revert NotClient();

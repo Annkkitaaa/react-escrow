@@ -95,6 +95,9 @@ interface IReactEscrow {
     /// @notice Emitted when all milestones in an escrow are released
     event EscrowCompleted(uint256 indexed escrowId);
 
+    /// @notice Emitted when a Created (unfunded) escrow is cancelled by the client
+    event EscrowCancelled(uint256 indexed escrowId);
+
     // --------------------------------------------------------
     // Core Functions
     // --------------------------------------------------------
@@ -109,6 +112,10 @@ interface IReactEscrow {
 
     /// @notice Deposit funds into a Created escrow
     function depositFunds(uint256 escrowId) external payable;
+
+    /// @notice Cancel a Created (unfunded) escrow. Only the client can cancel,
+    ///         and only before funds are deposited. No funds at risk.
+    function cancelEscrow(uint256 escrowId) external;
 
     /// @notice Freelancer submits work for a specific milestone
     function submitMilestone(uint256 escrowId, uint256 milestoneIndex) external;

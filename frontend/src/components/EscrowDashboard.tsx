@@ -179,6 +179,13 @@ export default function EscrowDashboard() {
 
   useEffect(() => { loadAll() }, [loadAll])
 
+  // Refresh when user returns to this tab (stale data prevention)
+  useEffect(() => {
+    const onFocus = () => loadAll()
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
+  }, [loadAll])
+
   // Build a set of escrow IDs we're watching so reactive events trigger targeted reloads
   const watchedIds = useMemo(
     () => new Set([...clientEscrows, ...freelancerEscrows].map(e => e.id.toString())),
