@@ -1,0 +1,24 @@
+{
+  "network": "somniaTestnet",
+  "chainId": "50312",
+  "handlerAddress": "0x472E9A6eC84ad6eA1EE7F816c7dE92530Eb67d33",
+  "escrowAddress": "0x64f0d037a4F4B46A9F11E01c2144b042bF638F76",
+  "createdAt": "2026-03-13T18:14:36.090Z",
+  "subscriptions": [
+    {
+      "name": "MilestoneApproved → releaseMilestoneFunds",
+      "topic": "0x6e3fd8bb18eed6833ae758e07c361bf145ce27c88bdf6d5029ddabf188d72ca6",
+      "txHash": "0x1919ee4b34e447861117d6003468a29fb0abbad755fa959f8f1999a4d97f8bfc"
+    },
+    {
+      "name": "DeadlineReached → executeTimeoutRelease",
+      "topic": "0xd0a86826cff2c480c589a3b9eb37e79ef9c97e0ad968b69a5a6472fc12f73d0c",
+      "txHash": "0x1bc151b713f62634e85928057258f7f25eabea4fd40f94e3c25d8b86e70c8b0a"
+    },
+    {
+      "name": "DisputeResolved → executeResolutionDistribution",
+      "topic": "0x47f401adb157b05ca2460e795000b6c7ed325678dca7814dc22bbc26f2e2c00e",
+      "txHash": "0x0966db365572318435adc0cb2b1d446d2914b52083d64b1f756b0447c6aa2967"
+    }
+  ]
+}

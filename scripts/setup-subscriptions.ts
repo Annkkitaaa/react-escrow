@@ -88,13 +88,17 @@ async function main() {
   const publicClient = createPublicClient({ chain: somniaTestnet, transport: http(rpcUrl) })
   const walletClient = createWalletClient({ account, chain: somniaTestnet, transport: http(rpcUrl) })
 
-  // ── Check handler balance (must be ≥ 32 STT) ─────────────────────────────
-  const balance = await publicClient.getBalance({ address: handlerAddress as `0x${string}` })
+  // ── Check deployer balance (subscription owner must hold ≥ 32 STT) ──────────
+  // The Somnia Reactivity precompile checks SUBSCRIPTION_OWNER_MINIMUM_BALANCE
+  // against msg.sender (the deployer), not the handler contract.
+  // Callbacks are charged against the subscription owner's on-chain balance.
+  const deployerAddress = account.address
+  const balance = await publicClient.getBalance({ address: deployerAddress })
   const MIN_BALANCE = 32n * 10n ** 18n
-  console.log(` Handler balance: ${Number(balance) / 1e18} STT`)
+  console.log(` Deployer balance: ${Number(balance) / 1e18} STT`)
   if (balance < MIN_BALANCE) {
-    console.warn(` WARNING: Handler balance < 32 STT. Subscriptions may pause.`)
-    console.warn(`          Fund ${handlerAddress} with ≥32 STT before subscribing.\n`)
+    console.warn(` WARNING: Deployer balance < 32 STT. subscribe() will revert.`)
+    console.warn(`          The subscription owner (deployer) must hold ≥32 STT.\n`)
   }
 
   // ── Create SDK instance ───────────────────────────────────────────────────
@@ -112,9 +116,9 @@ async function main() {
     console.log(` Creating subscription: ${name}`)
     const result = await sdk.createSoliditySubscription({
       ...BASE_SUB,
-      emitter:                handlerAddress as `0x${string}`,
+      emitter:                escrowAddress as `0x${string}`,   // contract that emits the event
       eventTopics:            [topic as `0x${string}`],
-      handlerContractAddress: handlerAddress as `0x${string}`,
+      handlerContractAddress: handlerAddress as `0x${string}`,  // contract called when event fires
     })
 
     if (result instanceof Error) {
