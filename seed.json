@@ -1,0 +1,19 @@
+{
+  "network": "hardhat",
+  "chainId": "31337",
+  "escrows": [
+    {
+      "id": "1",
+      "label": "Website Redesign",
+      "status": "Active/Submitted",
+      "totalEth": "2.0"
+    },
+    {
+      "id": "2",
+      "label": "Smart Contract Audit",
+      "status": "Active/Funded",
+      "totalEth": "2.0"
+    }
+  ],
+  "seededAt": "2026-03-13T15:11:44.671Z"
+}
