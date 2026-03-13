@@ -79,11 +79,6 @@ function MilestoneActions({
   const escrowActive = escrow.status === EscrowStatus.Active
 
   const actions: { label: string; action: string; variant: string; condition: boolean }[] = [
-    // Client: deposit funds when Created
-    {
-      label: 'Deposit Funds', action: 'deposit', variant: 'btn-primary',
-      condition: isClient && escrow.status === EscrowStatus.Created && index === 0 && s === MilestoneStatus.Pending,
-    },
     // Freelancer: submit when current + active + pending
     {
       label: 'Submit Milestone', action: 'submit', variant: 'btn-primary',

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { parseEther, isAddress } from 'viem'
 import { useEscrow, type MilestoneInput } from '../hooks/useEscrow'
+import { useWallet } from '../hooks/useWallet'
 
 // ── Milestone row ─────────────────────────────────────────────────────────────
 interface MilestoneRow {
@@ -90,8 +91,12 @@ function validateForm(
 ): string | null {
   if (!isAddress(freelancer))            return 'Invalid freelancer address'
   if (!isAddress(arbiter))               return 'Invalid arbiter address'
-  if (freelancer.toLowerCase() === currentAddress.toLowerCase())
+  if (currentAddress && freelancer.toLowerCase() === currentAddress.toLowerCase())
     return 'Freelancer cannot be your own address'
+  if (currentAddress && arbiter.toLowerCase() === currentAddress.toLowerCase())
+    return 'Arbiter cannot be your own address'
+  if (arbiter.toLowerCase() === freelancer.toLowerCase())
+    return 'Arbiter cannot be the same as the freelancer'
   if (milestones.length === 0)           return 'Add at least one milestone'
   for (let i = 0; i < milestones.length; i++) {
     const m = milestones[i]
@@ -109,16 +114,13 @@ function validateForm(
 export default function CreateEscrow() {
   const navigate = useNavigate()
   const { createEscrow, isTxPending } = useEscrow()
+  const { address } = useWallet()
+  const currentAddress = address ?? ''
 
   const [freelancer, setFreelancer] = useState('')
   const [arbiter,    setArbiter]    = useState('')
   const [milestones, setMilestones] = useState<MilestoneRow[]>([{ ...EMPTY_MILESTONE }])
   const [validationError, setValidationError] = useState<string | null>(null)
-
-  // Current wallet address for validation
-  const currentAddress = window.ethereum
-    ? '' // will validate in submit (MetaMask gives us the address then)
-    : ''
 
   const updateMilestone = (index: number, field: keyof MilestoneRow, value: string) => {
     setMilestones(prev => prev.map((m, i) => i === index ? { ...m, [field]: value } : m))

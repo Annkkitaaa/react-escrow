@@ -25,8 +25,10 @@ export function ReactivityProvider({ children }: { children: ReactNode }) {
   const listenersRef = useRef<Set<EventListener>>(new Set())
   const wsRef = useRef<WebSocket | null>(null)
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout>>()
+  const mountedRef = useRef(true)
 
   const connect = useCallback(() => {
+    if (!mountedRef.current) return
     try {
       const ws = new WebSocket(REACTIVE_SERVICE_WS_URL)
       wsRef.current = ws
@@ -48,6 +50,7 @@ export function ReactivityProvider({ children }: { children: ReactNode }) {
 
       ws.onclose = () => {
         setIsConnected(false)
+        if (!mountedRef.current) return
         console.log('[Reactivity] WebSocket disconnected. Reconnecting in 3s...')
         reconnectTimeoutRef.current = setTimeout(connect, 3000)
       }
@@ -58,13 +61,17 @@ export function ReactivityProvider({ children }: { children: ReactNode }) {
       }
     } catch (err) {
       console.error('[Reactivity] Connection failed:', err)
-      reconnectTimeoutRef.current = setTimeout(connect, 3000)
+      if (mountedRef.current) {
+        reconnectTimeoutRef.current = setTimeout(connect, 3000)
+      }
     }
   }, [])
 
   useEffect(() => {
+    mountedRef.current = true
     connect()
     return () => {
+      mountedRef.current = false
       clearTimeout(reconnectTimeoutRef.current)
       wsRef.current?.close()
     }
