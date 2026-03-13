@@ -315,7 +315,7 @@ contract ReactEscrow is IReactEscrow, ReentrancyGuard {
         uint256 escrowId,
         uint256 milestoneIndex,
         uint8 resolution
-    ) external escrowExists(escrowId) {
+    ) external nonReentrant escrowExists(escrowId) {
         EscrowData storage escrow = _escrows[escrowId];
         if (msg.sender != escrow.arbiter) revert NotArbiter();
         if (escrow.status != EscrowStatus.Disputed) revert WrongStatus();
