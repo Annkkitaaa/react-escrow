@@ -2,58 +2,224 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Google Fonts — Inter + JetBrains Mono */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ============================================================
+   Base — DoraHacks: black background, white text, orange brand
+   ============================================================ */
 @layer base {
   html {
-    @apply bg-gray-950 text-gray-100;
+    @apply bg-surface-base text-white;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
-    @apply min-h-screen font-sans antialiased;
+    @apply min-h-screen font-sans;
+    background-color: #0a0a0a;
+    /* Subtle orange radial glow at the very top */
+    background-image: radial-gradient(
+      ellipse 80% 35% at 50% -5%,
+      rgba(255, 107, 0, 0.12) 0%,
+      transparent 70%
+    );
+    background-attachment: fixed;
   }
 
   * {
-    @apply border-gray-800;
+    border-color: #252525;
   }
+
+  h1, h2, h3 {
+    @apply font-bold tracking-tight text-white;
+  }
+
+  a {
+    @apply text-brand-400 hover:text-brand-300 transition-colors;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #0a0a0a; }
+  ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #ff6b00; }
 }
 
+/* ============================================================
+   Components
+   ============================================================ */
 @layer components {
+
+  /* ---- Buttons ---- */
+
   .btn-primary {
-    @apply px-4 py-2 bg-somnia-600 hover:bg-somnia-500 text-white font-medium rounded-lg
-           transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2
+           px-5 py-2.5 rounded-xl font-semibold text-sm text-white
+           bg-brand-500 hover:bg-brand-400
+           shadow-orange-sm hover:shadow-orange-md
+           transition-all duration-150
+           disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none;
   }
 
   .btn-secondary {
-    @apply px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium rounded-lg
-           transition-colors duration-150 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2
+           px-5 py-2.5 rounded-xl font-semibold text-sm text-white
+           bg-surface-card hover:bg-surface-hover
+           border border-surface-border hover:border-brand-500/40
+           transition-all duration-150
+           disabled:opacity-40 disabled:cursor-not-allowed;
   }
 
   .btn-danger {
-    @apply px-4 py-2 bg-red-700 hover:bg-red-600 text-white font-medium rounded-lg
-           transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2
+           px-5 py-2.5 rounded-xl font-semibold text-sm text-white
+           bg-red-600 hover:bg-red-500
+           transition-all duration-150
+           disabled:opacity-40 disabled:cursor-not-allowed;
   }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2
+           px-4 py-2 rounded-lg font-medium text-sm text-gray-400 hover:text-white
+           hover:bg-surface-hover
+           transition-all duration-150;
+  }
+
+  /* ---- Cards ---- */
 
   .card {
-    @apply bg-gray-900 border border-gray-800 rounded-xl p-6;
+    @apply bg-surface-card border border-surface-border rounded-2xl p-6
+           shadow-card;
   }
 
+  .card-hover {
+    @apply card hover:border-brand-500/20 hover:shadow-card-hover
+           transition-all duration-200 cursor-pointer;
+  }
+
+  /* Orange-accented card — for highlighted/active items */
+  .card-accent {
+    @apply card border-brand-500/30
+           shadow-orange-sm;
+  }
+
+  /* Glass-effect card (inspired by the screenshot) */
+  .card-glass {
+    @apply rounded-2xl p-6 border border-white/5
+           backdrop-blur-xl;
+    background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+  }
+
+  /* ---- Form elements ---- */
+
   .input {
-    @apply bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-gray-100
-           placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-somnia-500
-           focus:border-transparent w-full;
+    @apply bg-surface-input border border-surface-border rounded-xl px-4 py-2.5
+           text-white text-sm placeholder-gray-600
+           focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500/50
+           transition-all duration-150 w-full;
+  }
+
+  .input-area {
+    @apply input resize-none;
   }
 
   .label {
-    @apply block text-sm font-medium text-gray-400 mb-1;
+    @apply block text-sm font-medium text-gray-400 mb-1.5;
   }
+
+  /* ---- Badges / Status pills ---- */
 
   .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold;
   }
 
-  .badge-created    { @apply badge bg-gray-700 text-gray-300; }
-  .badge-funded     { @apply badge bg-blue-900 text-blue-300; }
-  .badge-active     { @apply badge bg-somnia-900 text-somnia-300; }
-  .badge-completed  { @apply badge bg-green-900 text-green-300; }
-  .badge-disputed   { @apply badge bg-red-900 text-red-300; }
-  .badge-cancelled  { @apply badge bg-gray-800 text-gray-500; }
+  .badge-created   { @apply badge bg-white/5 text-gray-400 border border-white/10; }
+  .badge-funded    { @apply badge bg-blue-500/10 text-blue-400 border border-blue-500/20; }
+  .badge-active    { @apply badge bg-brand-500/10 text-brand-400 border border-brand-500/20; }
+  .badge-completed { @apply badge bg-green-500/10 text-green-400 border border-green-500/20; }
+  .badge-disputed  { @apply badge bg-red-500/10 text-red-400 border border-red-500/20; }
+  .badge-cancelled { @apply badge bg-white/3 text-gray-600 border border-white/5; }
+
+  /* Milestone status badges */
+  .badge-pending   { @apply badge bg-white/5 text-gray-500 border border-white/8; }
+  .badge-submitted { @apply badge bg-amber-500/10 text-amber-400 border border-amber-500/20; }
+  .badge-approved  { @apply badge bg-brand-500/10 text-brand-400 border border-brand-500/20; }
+  .badge-released  { @apply badge bg-green-500/10 text-green-400 border border-green-500/20; }
+
+  /* ---- Live / Reactivity indicator ---- */
+
+  .live-dot {
+    @apply h-2 w-2 rounded-full bg-brand-500 animate-pulse-orange;
+  }
+
+  .live-dot-offline {
+    @apply h-2 w-2 rounded-full bg-red-500;
+  }
+
+  /* ---- Divider ---- */
+
+  .divider {
+    @apply border-t border-surface-border;
+  }
+
+  /* ---- Stat / data display ---- */
+
+  .stat-label { @apply text-xs text-gray-500 uppercase tracking-wider font-medium; }
+  .stat-value { @apply text-xl font-bold text-white; }
+
+  /* ---- Orange highlight text ---- */
+
+  .text-accent { @apply text-brand-400; }
+  .text-accent-bright { @apply text-brand-500 font-semibold; }
+
+  /* ---- Event log (Reactivity feed) ---- */
+
+  .event-row {
+    @apply flex items-start gap-3 py-2.5 px-3 rounded-xl
+           bg-surface-card border border-surface-border
+           hover:border-brand-500/20
+           transition-all duration-150 animate-slide-up;
+  }
+
+  .event-dot {
+    @apply mt-1 h-2 w-2 rounded-full flex-shrink-0;
+  }
+
+  /* ---- Milestone timeline ---- */
+
+  .timeline-step {
+    @apply flex gap-4 relative;
+  }
+
+  .timeline-line {
+    @apply absolute left-4 top-8 bottom-0 w-px bg-surface-border;
+  }
+
+  .timeline-circle {
+    @apply h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0
+           border-2 border-surface-border bg-surface-card text-xs font-bold;
+  }
+
+  .timeline-circle-active {
+    @apply timeline-circle border-brand-500 text-brand-400 shadow-orange-sm;
+  }
+
+  .timeline-circle-done {
+    @apply timeline-circle border-green-500 text-green-400 bg-green-500/10;
+  }
+
+  .timeline-circle-disputed {
+    @apply timeline-circle border-red-500 text-red-400 bg-red-500/10;
+  }
+
+  /* ---- Page section header ---- */
+
+  .section-title {
+    @apply text-2xl font-bold text-white mb-1;
+  }
+
+  .section-subtitle {
+    @apply text-sm text-gray-500;
+  }
 }
