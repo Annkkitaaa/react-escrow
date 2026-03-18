@@ -36,26 +36,26 @@ function MilestoneRowInput({
       </div>
 
       <div>
-        <label className="label">Description</label>
-        <input className="input" placeholder="Describe the deliverable…" value={row.description} onChange={e => onChange('description', e.target.value)} />
+        <label className="label" htmlFor={`milestone-${index}-description`}>Description</label>
+        <input id={`milestone-${index}-description`} className="input" placeholder="Describe the deliverable…" value={row.description} onChange={e => onChange('description', e.target.value)} />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="label">{mode === 'private' ? 'Amount (hidden)' : 'Amount (STT)'}</label>
-          <input className="input" type="number" min="0" step="0.01" placeholder="0.5" value={row.amountEth} onChange={e => onChange('amountEth', e.target.value)} />
+          <label className="label" htmlFor={`milestone-${index}-amount`}>{mode === 'private' ? 'Amount (hidden)' : 'Amount (STT)'}</label>
+          <input id={`milestone-${index}-amount`} className="input" type="number" min="0" step="0.01" placeholder="0.5" value={row.amountEth} onChange={e => onChange('amountEth', e.target.value)} />
           {mode === 'private' && <p className="text-xs text-gray-600 mt-1">Amount is hidden on-chain via commit-reveal</p>}
         </div>
         <div>
-          <label className="label">Deadline</label>
-          <input className="input" type="date" min={new Date().toISOString().split('T')[0]} value={row.deadlineDate} onChange={e => onChange('deadlineDate', e.target.value)} />
+          <label className="label" htmlFor={`milestone-${index}-deadline`}>Deadline</label>
+          <input id={`milestone-${index}-deadline`} className="input" type="date" value={row.deadlineDate} onChange={e => onChange('deadlineDate', e.target.value)} />
         </div>
       </div>
 
       {mode === 'delivery' && (
         <div>
-          <label className="label">Deliverable Spec (keccak256 hash or plain text)</label>
-          <input className="input font-mono text-xs" placeholder="e.g. Requirements Doc v1.0 — will be hashed" value={row.deliverableSpec || ''} onChange={e => onChange('deliverableSpec', e.target.value)} />
+          <label className="label" htmlFor={`milestone-${index}-spec`}>Deliverable Spec (keccak256 hash or plain text)</label>
+          <input id={`milestone-${index}-spec`} className="input font-mono text-xs" placeholder="e.g. Requirements Doc v1.0 — will be hashed" value={row.deliverableSpec || ''} onChange={e => onChange('deliverableSpec', e.target.value)} />
           <p className="text-xs text-gray-600 mt-1">Freelancer must submit matching hash. Plain text will be keccak256-hashed.</p>
         </div>
       )}
@@ -235,13 +235,13 @@ export default function CreateEscrow() {
         <div className="card space-y-4">
           <h2 className="text-base font-semibold text-white">Parties</h2>
           <div>
-            <label className="label">Freelancer Address</label>
-            <input className="input" placeholder="0x…" value={freelancer} onChange={e => setFreelancer(e.target.value)} />
+            <label className="label" htmlFor="freelancer-address">Freelancer Address</label>
+            <input id="freelancer-address" className="input" placeholder="0x…" value={freelancer} onChange={e => setFreelancer(e.target.value)} />
             <p className="text-xs text-gray-600 mt-1">The party delivering the work and receiving payment</p>
           </div>
           <div>
-            <label className="label">Arbiter Address</label>
-            <input className="input" placeholder="0x… (trusted third party for disputes)" value={arbiter} onChange={e => setArbiter(e.target.value)} />
+            <label className="label" htmlFor="arbiter-address">Arbiter Address</label>
+            <input id="arbiter-address" className="input" placeholder="0x… (trusted third party for disputes)" value={arbiter} onChange={e => setArbiter(e.target.value)} />
             <p className="text-xs text-gray-600 mt-1">Resolves disputes. Can be a multisig, DAO, or trusted wallet</p>
           </div>
         </div>

@@ -11,6 +11,7 @@ interface WalletContextType {
   isConnected: boolean
   isCorrectNetwork: boolean
   isConnecting: boolean
+  isLoading: boolean
   connect: () => Promise<void>
   disconnect: () => void
   switchToSomnia: () => Promise<void>
@@ -21,6 +22,7 @@ const WalletContext = createContext<WalletContextType | null>(null)
 export function WalletProvider({ children }: { children: ReactNode }) {
   const [address, setAddress] = useState<string | null>(null)
   const [isConnecting, setIsConnecting] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [chainId, setChainId] = useState<number | null>(null)
 
   const isCorrectNetwork = chainId === CHAIN_ID
@@ -85,13 +87,20 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   // Check if already connected on mount
   useEffect(() => {
-    if (!window.ethereum) return
+    if (!window.ethereum) {
+      setIsLoading(false)
+      return
+    }
     ;(async () => {
-      const accounts = await window.ethereum!.request({ method: 'eth_accounts' }) as string[]
-      if (accounts.length > 0) {
-        setAddress(accounts[0])
-        const chainIdHex = await window.ethereum!.request({ method: 'eth_chainId' }) as string
-        setChainId(parseInt(chainIdHex, 16))
+      try {
+        const accounts = await window.ethereum!.request({ method: 'eth_accounts' }) as string[]
+        if (accounts.length > 0) {
+          setAddress(accounts[0])
+          const chainIdHex = await window.ethereum!.request({ method: 'eth_chainId' }) as string
+          setChainId(parseInt(chainIdHex, 16))
+        }
+      } finally {
+        setIsLoading(false)
       }
     })()
   }, [])
@@ -102,6 +111,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       isConnected: !!address,
       isCorrectNetwork,
       isConnecting,
+      isLoading,
       connect,
       disconnect,
       switchToSomnia,

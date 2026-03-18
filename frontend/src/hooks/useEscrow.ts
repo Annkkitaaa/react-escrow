@@ -86,10 +86,11 @@ export function useEscrow() {
   // ── Reads ──────────────────────────────────────────────────────────────────
 
   const getEscrow = useCallback(async (id: bigint): Promise<EscrowData> => {
+    // viem v2 returns multiple outputs as an array (not a named object)
     const raw = await publicClient.readContract({
       address: addr, abi: REACT_ESCROW_ABI, functionName: 'getEscrow', args: [id],
-    }) as { client: Address; freelancer: Address; arbiter: Address; totalAmount: bigint; status: number; currentMilestone: bigint }
-    return { id, client: raw.client, freelancer: raw.freelancer, arbiter: raw.arbiter, totalAmount: raw.totalAmount, status: raw.status as EscrowStatus, currentMilestone: raw.currentMilestone }
+    }) as readonly [Address, Address, Address, bigint, number, bigint]
+    return { id, client: raw[0], freelancer: raw[1], arbiter: raw[2], totalAmount: raw[3], status: raw[4] as EscrowStatus, currentMilestone: raw[5] }
   }, [addr])
 
   const getMilestones = useCallback(async (id: bigint): Promise<MilestoneData[]> => {
@@ -131,7 +132,9 @@ export function useEscrow() {
   const getReputation = useCallback(async (user: Address): Promise<ReputationData | null> => {
     if (!sbtAddr) return null
     try {
-      return publicClient.readContract({ address: sbtAddr, abi: REPUTATION_SBT_ABI, functionName: 'reputation', args: [user] }) as Promise<ReputationData>
+      // viem v2 returns multiple outputs as array; map by index
+      const raw = await publicClient.readContract({ address: sbtAddr, abi: REPUTATION_SBT_ABI, functionName: 'reputation', args: [user] }) as readonly [`0x${string}`, bigint, bigint, bigint, bigint]
+      return { merkleRoot: raw[0], totalEscrows: raw[1], totalAmountEarned: raw[2], disputeCount: raw[3], lastUpdated: raw[4] }
     } catch { return null }
   }, [sbtAddr])
 

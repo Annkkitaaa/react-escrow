@@ -158,10 +158,11 @@ function MilestoneActions({
 
 // ── Checkpoint progress panel ──────────────────────────────────────────────
 function CheckpointPanel({
-  escrowId, milestoneIndex, isClient, isFreelancer, isTxPending, onAction,
+  escrowId, milestoneIndex, milestoneStatus, isClient, isFreelancer, isTxPending, onAction,
 }: {
   escrowId: bigint
   milestoneIndex: number
+  milestoneStatus: MilestoneStatus
   isClient: boolean
   isFreelancer: boolean
   isTxPending: boolean
@@ -169,12 +170,58 @@ function CheckpointPanel({
 }) {
   const { getCheckpoints } = useEscrow()
   const [checkpoints, setCheckpoints] = useState<CheckpointData[]>([])
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [cpRows, setCpRows] = useState([{ description: '', weight: '' }])
 
   useEffect(() => {
     getCheckpoints(escrowId, BigInt(milestoneIndex)).then(setCheckpoints).catch(() => {})
   }, [escrowId, milestoneIndex, getCheckpoints])
 
-  if (checkpoints.length === 0) return null
+  if (checkpoints.length === 0) {
+    // Show "Add Checkpoints" form only for client on a Pending milestone
+    if (!isClient || milestoneStatus !== MilestoneStatus.Pending) return null
+    const totalWeight = cpRows.reduce((s, r) => s + (parseInt(r.weight) || 0), 0)
+    const canSubmit = cpRows.every(r => r.description.trim() && parseInt(r.weight) > 0) && totalWeight === 100
+
+    if (!showAddForm) {
+      return (
+        <div className="mt-3 pt-3" style={{ borderTop: '1px solid #252525' }}>
+          <button onClick={() => setShowAddForm(true)} className="text-xs px-3 py-1.5 rounded"
+            style={{ backgroundColor: 'rgba(255,107,0,0.06)', color: '#ff8c24', border: '1px solid rgba(255,107,0,0.15)' }}>
+            + Enable Streaming Checkpoints
+          </button>
+        </div>
+      )
+    }
+
+    return (
+      <div className="mt-3 pt-3 space-y-2" style={{ borderTop: '1px solid #252525' }}>
+        <p className="text-xs text-gray-500 font-semibold uppercase tracking-wide">Add Checkpoints (weights must sum to 100)</p>
+        {cpRows.map((row, i) => (
+          <div key={i} className="flex gap-2 items-center">
+            <input className="input text-xs py-1 flex-1" placeholder="Description" value={row.description}
+              onChange={e => setCpRows(prev => prev.map((r, j) => j === i ? { ...r, description: e.target.value } : r))} />
+            <input className="input text-xs py-1 w-16" placeholder="%" type="number" min="1" max="100" value={row.weight}
+              onChange={e => setCpRows(prev => prev.map((r, j) => j === i ? { ...r, weight: e.target.value } : r))} />
+            {cpRows.length > 1 && (
+              <button onClick={() => setCpRows(prev => prev.filter((_, j) => j !== i))}
+                className="text-xs text-red-400 px-1">✕</button>
+            )}
+          </div>
+        ))}
+        <div className="flex gap-2 items-center">
+          <span className={`text-xs ${totalWeight === 100 ? 'text-green-400' : 'text-red-400'}`}>Total: {totalWeight}%</span>
+          <button onClick={() => setCpRows(prev => [...prev, { description: '', weight: '' }])}
+            className="text-xs px-2 py-0.5 rounded" style={{ color: '#6b7280', border: '1px solid #252525' }}>+ Row</button>
+          <button disabled={isTxPending || !canSubmit}
+            onClick={() => onAction('addCheckpoints', milestoneIndex, cpRows)}
+            className="text-xs px-3 py-1 rounded btn-primary ml-auto">Save Checkpoints</button>
+          <button onClick={() => setShowAddForm(false)}
+            className="text-xs px-2 py-0.5 rounded" style={{ color: '#6b7280' }}>Cancel</button>
+        </div>
+      </div>
+    )
+  }
 
   const statusLabel = ['Pending', 'Submitted', 'Approved', 'Released']
   const statusColor = ['#6b7280', '#f59e0b', '#34d399', '#60a5fa']
@@ -394,6 +441,7 @@ function MilestoneRow({
           <CheckpointPanel
             escrowId={escrow.id}
             milestoneIndex={index}
+            milestoneStatus={milestone.status}
             isClient={isClient}
             isFreelancer={isFreelancer}
             isTxPending={isTxPending}
@@ -430,7 +478,7 @@ export default function EscrowDetail() {
     depositFunds, submitMilestone, approveMilestone,
     raiseDispute, resolveDispute, releaseFunds, executeTimeoutRelease, checkAndTriggerTimeout,
     cancelEscrow,
-    submitCheckpoint, approveCheckpoint,
+    submitCheckpoint, approveCheckpoint, addMilestoneCheckpoints,
     submitMilestoneWithDeliverable, challengeDeliverable, checkAndTriggerChallengeExpiry,
     approvePrivateMilestone,
   } = useEscrow()
@@ -523,6 +571,13 @@ export default function EscrowDetail() {
         case 'cancel':
           hash = await cancelEscrow(escrowId)
           break
+        case 'addCheckpoints': {
+          const rows = extra as Array<{ description: string; weight: string }>
+          const descs = rows.map(r => r.description)
+          const weights = rows.map(r => parseInt(r.weight))
+          hash = await addMilestoneCheckpoints(escrowId, midx, descs, weights)
+          break
+        }
         case 'submitCheckpoint':
           hash = await submitCheckpoint(escrowId, midx, extra as bigint)
           break

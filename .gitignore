@@ -28,6 +28,11 @@ coverage.json
 # Hardhat deployment records
 deployments/
 
+# Playwright E2E
+frontend/playwright-report/
+frontend/test-results/
+frontend/.playwright/
+
 # IDE
 .vscode/
 .idea/

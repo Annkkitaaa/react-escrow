@@ -8,8 +8,10 @@ import type { ReactNode } from 'react'
  * redirect back after connecting.
  */
 export default function RequireWallet({ children }: { children: ReactNode }) {
-  const { isConnected, isCorrectNetwork } = useWallet()
+  const { isConnected, isCorrectNetwork, isLoading } = useWallet()
   const location = useLocation()
+
+  if (isLoading) return null
 
   if (!isConnected || !isCorrectNetwork) {
     return <Navigate to="/connect" state={{ from: location }} replace />
