@@ -1,10 +1,11 @@
 /**
  * Phase 4 — Reactivity subscription setup script
  *
- * Registers three on-chain Solidity subscriptions via the Somnia Reactivity SDK:
+ * Registers four on-chain Solidity subscriptions via the Somnia Reactivity SDK:
  *   1. MilestoneApproved  → handler auto-releases funds
  *   2. DeadlineReached    → handler triggers timeout release
  *   3. DisputeResolved    → handler distributes resolution
+ *   4. CheckpointApproved → handler releases checkpoint partial payment
  *
  * All subscriptions filter by emitter = ReactEscrow address so the handler
  * is only called for events from our contract.
@@ -44,6 +45,7 @@ const somniaTestnet = defineChain({
 const MILESTONE_APPROVED_TOPIC  = ethers.id('MilestoneApproved(uint256,uint256,uint256)')
 const DEADLINE_REACHED_TOPIC    = ethers.id('DeadlineReached(uint256,uint256)')
 const DISPUTE_RESOLVED_TOPIC    = ethers.id('DisputeResolved(uint256,uint256,uint8)')
+const CHECKPOINT_APPROVED_TOPIC = ethers.id('CheckpointApproved(uint256,uint256,uint256,uint256)')
 
 // ── Base subscription gas config ──────────────────────────────────────────────
 const BASE_SUB = {
@@ -130,9 +132,10 @@ async function main() {
     }
   }
 
-  await createSub('MilestoneApproved → releaseMilestoneFunds', MILESTONE_APPROVED_TOPIC)
-  await createSub('DeadlineReached → executeTimeoutRelease',    DEADLINE_REACHED_TOPIC)
-  await createSub('DisputeResolved → executeResolutionDistribution', DISPUTE_RESOLVED_TOPIC)
+  await createSub('MilestoneApproved → releaseMilestoneFunds',         MILESTONE_APPROVED_TOPIC)
+  await createSub('DeadlineReached → executeTimeoutRelease',            DEADLINE_REACHED_TOPIC)
+  await createSub('DisputeResolved → executeResolutionDistribution',    DISPUTE_RESOLVED_TOPIC)
+  await createSub('CheckpointApproved → releaseCheckpointFunds',        CHECKPOINT_APPROVED_TOPIC)
 
   // ── Save subscription results ─────────────────────────────────────────────
   const subsPath = path.join(__dirname, '..', 'subscriptions.json')
