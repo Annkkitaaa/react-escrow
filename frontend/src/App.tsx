@@ -1,10 +1,11 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import Dashboard    from './components/EscrowDashboard'
-import CreateEscrow from './components/CreateEscrow'
-import EscrowDetail from './components/EscrowDetail'
-import Layout        from './components/Layout'
-import WalletConnect from './components/WalletConnect'
-import RequireWallet from './components/RequireWallet'
+import Dashboard          from './components/EscrowDashboard'
+import CreateEscrow       from './components/CreateEscrow'
+import EscrowDetail       from './components/EscrowDetail'
+import ReputationProfile  from './components/ReputationProfile'
+import Layout             from './components/Layout'
+import WalletConnect      from './components/WalletConnect'
+import RequireWallet      from './components/RequireWallet'
 import { WalletProvider }     from './hooks/useWallet'
 import { ReactivityProvider } from './hooks/useReactivity'
 
@@ -27,6 +28,9 @@ export default function App() {
             } />
             <Route path="/escrow/:id" element={
               <RequireWallet><EscrowDetail /></RequireWallet>
+            } />
+            <Route path="/reputation" element={
+              <RequireWallet><ReputationProfile /></RequireWallet>
             } />
           </Routes>
         </Layout>

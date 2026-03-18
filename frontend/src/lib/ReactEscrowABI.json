@@ -6,7 +6,32 @@
   },
   {
     "inputs": [],
+    "name": "AlreadyChallenged",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "AlreadyFunded",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ChallengeExpired",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ChallengePeriodActive",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ChallengePeriodNotStarted",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CheckpointsAlreadyExist",
     "type": "error"
   },
   {
@@ -31,6 +56,16 @@
   },
   {
     "inputs": [],
+    "name": "InvalidCheckpointIndex",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidCommitment",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "InvalidFreelancer",
     "type": "error"
   },
@@ -41,7 +76,17 @@
   },
   {
     "inputs": [],
+    "name": "InvalidWeights",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "MilestoneAmountZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoCheckpoints",
     "type": "error"
   },
   {
@@ -81,12 +126,22 @@
   },
   {
     "inputs": [],
+    "name": "NotPrivateMilestone",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "ReentrancyGuardReentrantCall",
     "type": "error"
   },
   {
     "inputs": [],
     "name": "TransferFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "WrongCheckpointStatus",
     "type": "error"
   },
   {
@@ -109,6 +164,93 @@
         "type": "uint256"
       },
       {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "milestoneIndex",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "checkpointIndex",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "CheckpointApproved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "milestoneIndex",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "checkpointIndex",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "CheckpointReleased",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "milestoneIndex",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "checkpointIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "CheckpointSubmitted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      },
+      {
         "indexed": false,
         "internalType": "uint256",
         "name": "milestoneIndex",
@@ -116,6 +258,69 @@
       }
     ],
     "name": "DeadlineReached",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "milestoneIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "DeliverableChallengePeriodExpired",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "milestoneIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "DeliverableChallenged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "milestoneIndex",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "deliverableHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "DeliverableVerified",
     "type": "event"
   },
   {
@@ -320,6 +525,82 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "milestoneIndex",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "PrivateMilestoneRevealed",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "milestoneIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string[]",
+        "name": "descriptions",
+        "type": "string[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "weights",
+        "type": "uint8[]"
+      }
+    ],
+    "name": "addMilestoneCheckpoints",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "milestoneIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "checkpointIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "approveCheckpoint",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -343,9 +624,73 @@
         "internalType": "uint256",
         "name": "escrowId",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "milestoneIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "salt",
+        "type": "bytes32"
+      }
+    ],
+    "name": "approvePrivateMilestone",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
       }
     ],
     "name": "cancelEscrow",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "milestoneIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "challengeDeliverable",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "milestoneIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "checkAndTriggerChallengeExpiry",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -404,6 +749,113 @@
       }
     ],
     "name": "createEscrow",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "freelancer",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "arbiter",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IReactEscrow.MilestoneInput[]",
+        "name": "milestoneInputs",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "deliverableHashes",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "challengePeriodSeconds",
+        "type": "uint256"
+      }
+    ],
+    "name": "createEscrowWithDelivery",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "freelancer",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "arbiter",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "commitment",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IReactEscrow.PrivateMilestoneInput[]",
+        "name": "milestoneInputs",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "createPrivateEscrow",
     "outputs": [
       {
         "internalType": "uint256",
@@ -484,6 +936,112 @@
         "type": "uint256"
       }
     ],
+    "name": "getChallengePeriod",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "milestoneIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "getCheckpoints",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "weightPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "status",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct IReactEscrow.CheckpointData[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "milestoneIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "getDeliveryData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "expectedHash",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "submittedHash",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "challengeDeadline",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "challenged",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct IReactEscrow.DeliveryData",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      }
+    ],
     "name": "getEscrow",
     "outputs": [
       {
@@ -553,6 +1111,59 @@
         "internalType": "uint256[]",
         "name": "",
         "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "milestoneIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "getMilestoneCommitment",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "commitment",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bool",
+        "name": "isPrivate",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "milestoneIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "getMilestoneReleasedAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -659,6 +1270,29 @@
         "internalType": "uint256",
         "name": "milestoneIndex",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "checkpointIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "releaseCheckpointFunds",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "milestoneIndex",
+        "type": "uint256"
       }
     ],
     "name": "releaseMilestoneFunds",
@@ -713,9 +1347,55 @@
         "internalType": "uint256",
         "name": "milestoneIndex",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "checkpointIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "submitCheckpoint",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "milestoneIndex",
+        "type": "uint256"
       }
     ],
     "name": "submitMilestone",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "escrowId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "milestoneIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "deliverableHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "submitMilestoneWithDeliverable",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

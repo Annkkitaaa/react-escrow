@@ -18,8 +18,9 @@ export default function Layout({ children }: LayoutProps) {
   const location = useLocation()
 
   const navLinks = [
-    { to: '/dashboard', label: 'Dashboard' },
-    { to: '/create',    label: 'Create Escrow' },
+    { to: '/dashboard',  label: 'Dashboard' },
+    { to: '/create',     label: 'Create Escrow' },
+    { to: '/reputation', label: 'Reputation' },
   ]
 
   return (
