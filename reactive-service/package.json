@@ -10,10 +10,11 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "@openzeppelin/merkle-tree": "^1.0.8",
     "@somnia-chain/reactivity": "^0.1.10",
+    "dotenv": "^16.4.0",
     "viem": "^2.0.0",
-    "ws": "^8.17.0",
-    "dotenv": "^16.4.0"
+    "ws": "^8.17.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

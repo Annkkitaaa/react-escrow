@@ -13,6 +13,7 @@ import { createPublicClient, webSocket as viemWebSocket, defineChain } from 'vie
 import { SDK } from '@somnia-chain/reactivity'
 import { config } from './config'
 import { parseReactiveEvent, type ParsedEvent } from './handlers'
+import { recordEscrowCompletion } from './merkle'
 
 // ── Somnia chain definition (must include wsUrl for sdk.subscribe()) ──────────
 const somniaChain = defineChain({
@@ -93,6 +94,14 @@ async function startReactivitySubscription(): Promise<void> {
         const event = parseReactiveEvent(data)
         if (event) {
           broadcast(event)
+          // Feature 5: Update Merkle tree on FundsReleased (freelancer earned funds)
+          if (event.type === 'FundsReleased' && event.address && event.amount) {
+            recordEscrowCompletion(
+              event.address,
+              BigInt(event.escrowId),
+              BigInt(event.amount),
+            ).catch(err => console.error('[Merkle] recordEscrowCompletion error:', err))
+          }
         } else {
           // Log unknown / undecodeable events at debug level
           console.debug('[ReactiveService] Ignored unrecognized event:', JSON.stringify(data)?.slice(0, 120))

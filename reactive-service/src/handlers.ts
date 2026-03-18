@@ -21,8 +21,10 @@ export interface ParsedEvent {
   type: string
   escrowId: string         // uint256 as string
   milestoneIndex?: string  // uint256 as string
+  checkpointIndex?: string // uint256 as string (Feature 3)
   amount?: string          // uint256 as string (wei)
   address?: string
+  deliverableHash?: string // bytes32 hex (Feature 2)
   resolution?: number
   timestamp: number
   blockNumber?: string     // uint256 as string
@@ -34,6 +36,7 @@ export interface ParsedEvent {
 
 // ── Event topic selectors ──────────────────────────────────────────────────────
 const TOPIC = {
+  // Original events
   EscrowCreated:      keccak256(stringToBytes('EscrowCreated(uint256,address,address,uint256)')),
   FundsDeposited:     keccak256(stringToBytes('FundsDeposited(uint256,uint256)')),
   MilestoneSubmitted: keccak256(stringToBytes('MilestoneSubmitted(uint256,uint256)')),
@@ -43,6 +46,17 @@ const TOPIC = {
   DisputeRaised:      keccak256(stringToBytes('DisputeRaised(uint256,uint256,address)')),
   DisputeResolved:    keccak256(stringToBytes('DisputeResolved(uint256,uint256,uint8)')),
   EscrowCompleted:    keccak256(stringToBytes('EscrowCompleted(uint256)')),
+  EscrowCancelled:    keccak256(stringToBytes('EscrowCancelled(uint256)')),
+  // Feature 1 — Commit-Reveal
+  PrivateMilestoneRevealed: keccak256(stringToBytes('PrivateMilestoneRevealed(uint256,uint256,uint256)')),
+  // Feature 2 — Proof-of-Delivery
+  DeliverableVerified:             keccak256(stringToBytes('DeliverableVerified(uint256,uint256,bytes32)')),
+  DeliverableChallengePeriodExpired: keccak256(stringToBytes('DeliverableChallengePeriodExpired(uint256,uint256)')),
+  DeliverableChallenged:           keccak256(stringToBytes('DeliverableChallenged(uint256,uint256)')),
+  // Feature 3 — Streaming Checkpoints
+  CheckpointSubmitted: keccak256(stringToBytes('CheckpointSubmitted(uint256,uint256,uint256)')),
+  CheckpointApproved:  keccak256(stringToBytes('CheckpointApproved(uint256,uint256,uint256,uint256)')),
+  CheckpointReleased:  keccak256(stringToBytes('CheckpointReleased(uint256,uint256,uint256,uint256)')),
 } as const
 
 // ── Decoding helpers ───────────────────────────────────────────────────────────
@@ -72,6 +86,8 @@ export function parseReactiveEvent(raw: SubscriptionCallback | any): ParsedEvent
     const timestamp = Date.now()
     const id = randomUUID()
     const rawObj = { topics: topics as string[], data }
+
+    // ── Original events ───────────────────────────────────────────────────────
 
     // EscrowCreated(uint256 indexed escrowId, address indexed client, address indexed freelancer, uint256 totalAmount)
     if (selector === TOPIC.EscrowCreated) {
@@ -189,6 +205,123 @@ export function parseReactiveEvent(raw: SubscriptionCallback | any): ParsedEvent
       return {
         id, type: 'EscrowCompleted', timestamp,
         escrowId,
+        raw: rawObj,
+      }
+    }
+
+    // EscrowCancelled(uint256 indexed escrowId)
+    if (selector === TOPIC.EscrowCancelled) {
+      const escrowId = topicToU256(topics[1])
+      return {
+        id, type: 'EscrowCancelled', timestamp,
+        escrowId,
+        raw: rawObj,
+      }
+    }
+
+    // ── Feature 1: Commit-Reveal ──────────────────────────────────────────────
+
+    // PrivateMilestoneRevealed(uint256 indexed escrowId, uint256 milestoneIndex, uint256 amount)
+    if (selector === TOPIC.PrivateMilestoneRevealed) {
+      const escrowId = topicToU256(topics[1])
+      const [milestoneIndex, amount] = decodeAbiParameters(
+        [{ type: 'uint256' }, { type: 'uint256' }], data
+      )
+      return {
+        id, type: 'PrivateMilestoneRevealed', timestamp,
+        escrowId,
+        milestoneIndex: milestoneIndex.toString(),
+        amount: amount.toString(),
+        raw: rawObj,
+      }
+    }
+
+    // ── Feature 2: Proof-of-Delivery ─────────────────────────────────────────
+
+    // DeliverableVerified(uint256 indexed escrowId, uint256 indexed milestoneIndex, bytes32 deliverableHash)
+    if (selector === TOPIC.DeliverableVerified) {
+      const escrowId      = topicToU256(topics[1])
+      const milestoneIndex = topicToU256(topics[2])
+      const [deliverableHash] = decodeAbiParameters([{ type: 'bytes32' }], data)
+      return {
+        id, type: 'DeliverableVerified', timestamp,
+        escrowId,
+        milestoneIndex,
+        deliverableHash: deliverableHash as string,
+        raw: rawObj,
+      }
+    }
+
+    // DeliverableChallengePeriodExpired(uint256 indexed escrowId, uint256 indexed milestoneIndex)
+    if (selector === TOPIC.DeliverableChallengePeriodExpired) {
+      const escrowId       = topicToU256(topics[1])
+      const milestoneIndex = topicToU256(topics[2])
+      return {
+        id, type: 'DeliverableChallengePeriodExpired', timestamp,
+        escrowId,
+        milestoneIndex,
+        raw: rawObj,
+      }
+    }
+
+    // DeliverableChallenged(uint256 indexed escrowId, uint256 indexed milestoneIndex)
+    if (selector === TOPIC.DeliverableChallenged) {
+      const escrowId       = topicToU256(topics[1])
+      const milestoneIndex = topicToU256(topics[2])
+      return {
+        id, type: 'DeliverableChallenged', timestamp,
+        escrowId,
+        milestoneIndex,
+        raw: rawObj,
+      }
+    }
+
+    // ── Feature 3: Streaming Checkpoints ─────────────────────────────────────
+
+    // CheckpointSubmitted(uint256 indexed escrowId, uint256 indexed milestoneIndex, uint256 checkpointIndex)
+    if (selector === TOPIC.CheckpointSubmitted) {
+      const escrowId       = topicToU256(topics[1])
+      const milestoneIndex = topicToU256(topics[2])
+      const [checkpointIndex] = decodeAbiParameters([{ type: 'uint256' }], data)
+      return {
+        id, type: 'CheckpointSubmitted', timestamp,
+        escrowId,
+        milestoneIndex,
+        checkpointIndex: checkpointIndex.toString(),
+        raw: rawObj,
+      }
+    }
+
+    // CheckpointApproved(uint256 indexed escrowId, uint256 indexed milestoneIndex, uint256 checkpointIndex, uint256 amount)
+    if (selector === TOPIC.CheckpointApproved) {
+      const escrowId       = topicToU256(topics[1])
+      const milestoneIndex = topicToU256(topics[2])
+      const [checkpointIndex, amount] = decodeAbiParameters(
+        [{ type: 'uint256' }, { type: 'uint256' }], data
+      )
+      return {
+        id, type: 'CheckpointApproved', timestamp,
+        escrowId,
+        milestoneIndex,
+        checkpointIndex: checkpointIndex.toString(),
+        amount: amount.toString(),
+        raw: rawObj,
+      }
+    }
+
+    // CheckpointReleased(uint256 indexed escrowId, uint256 milestoneIndex, uint256 checkpointIndex, uint256 amount)
+    // Note: only escrowId is indexed; milestoneIndex, checkpointIndex, amount are in data
+    if (selector === TOPIC.CheckpointReleased) {
+      const escrowId = topicToU256(topics[1])
+      const [milestoneIndex, checkpointIndex, amount] = decodeAbiParameters(
+        [{ type: 'uint256' }, { type: 'uint256' }, { type: 'uint256' }], data
+      )
+      return {
+        id, type: 'CheckpointReleased', timestamp,
+        escrowId,
+        milestoneIndex: milestoneIndex.toString(),
+        checkpointIndex: checkpointIndex.toString(),
+        amount: amount.toString(),
         raw: rawObj,
       }
     }
