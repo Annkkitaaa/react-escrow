@@ -1,14 +1,14 @@
 {
-  "network": "hardhat",
-  "chainId": "31337",
-  "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  "network": "somniaTestnet",
+  "chainId": "50312",
+  "deployer": "0x984a1dB53b989fd3977bf07EF4cae068BDE17bd4",
   "contracts": {
-    "ReactEscrow": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-    "ReactiveHandlers": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-    "HookRegistry": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
-    "EscrowReceiptNFT": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-    "ReputationSBT": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
-    "ReputationHook": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"
+    "ReactEscrow": "0xe76069Bba704f4D3Da60d5031CC983FdB272A889",
+    "ReactiveHandlers": "0xc9a15219E15263fc04249D6a23EAF454c274FfB0",
+    "HookRegistry": "0xD7f17a9A31C7203e3D2700b76CdE6b2FFC4f40c5",
+    "EscrowReceiptNFT": "0x4901393B7D65cD52DA37E969C09f1036e1F66bF5",
+    "ReputationSBT": "0xD804E2045fC4A57b45FcE4C72397383b35660bb6",
+    "ReputationHook": "0x21F4DaEaE24E6ca825315813680317F1A218f6d5"
   },
-  "deployedAt": "2026-03-18T10:02:50.306Z"
+  "deployedAt": "2026-03-18T13:43:20.642Z"
 }

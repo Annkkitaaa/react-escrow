@@ -1,24 +1,29 @@
 {
   "network": "somniaTestnet",
   "chainId": "50312",
-  "handlerAddress": "0xfBF46805a3F3AFD485232b441E8E88E19c7dd06F",
-  "escrowAddress": "0xbf8f142b2eb8eB79c98296CB1dC58Cb2c7885f5B",
-  "createdAt": "2026-03-13T19:39:30.044Z",
+  "handlerAddress": "0xc9a15219E15263fc04249D6a23EAF454c274FfB0",
+  "escrowAddress": "0xe76069Bba704f4D3Da60d5031CC983FdB272A889",
+  "createdAt": "2026-03-18T15:33:50.344Z",
   "subscriptions": [
     {
       "name": "MilestoneApproved → releaseMilestoneFunds",
       "topic": "0x6e3fd8bb18eed6833ae758e07c361bf145ce27c88bdf6d5029ddabf188d72ca6",
-      "txHash": "0xaa5975f9b57a66185d374b370bf6e6294c347785d19afedc25fe54512c1d613b"
+      "txHash": "0x8f6a75aceddcb879f5397d427c92aa278c10ab713618a262898b508de994a1a8"
     },
     {
       "name": "DeadlineReached → executeTimeoutRelease",
       "topic": "0xd0a86826cff2c480c589a3b9eb37e79ef9c97e0ad968b69a5a6472fc12f73d0c",
-      "txHash": "0x3a3f1c1aa852edeb3a0b6aab6716d2cb3ba7f51b9acb229dea14de5f07b0e598"
+      "txHash": "0xa500d1f9a34164f6fb4da016671d033d9d47fa9960ede34e1fdeeb7f9efd67db"
     },
     {
       "name": "DisputeResolved → executeResolutionDistribution",
       "topic": "0x47f401adb157b05ca2460e795000b6c7ed325678dca7814dc22bbc26f2e2c00e",
-      "txHash": "0x6a6ad500fc8dc2eb72ca72878cb8620caef78921755264d13750f22481f57bc8"
+      "txHash": "0xa99cd611acceb2e4ec581d0c78743de29b70911029bf19f705ded8ac4f73d719"
+    },
+    {
+      "name": "CheckpointApproved → releaseCheckpointFunds",
+      "topic": "0xa67b1fb6f437d38361b03df67a8c277de8f23c1c75625c9a073858ba80dc3134",
+      "txHash": "0x530a4ba06d283b7a1af4048bf7b0beefd1d0d46c0835cb9aeb207e2d89855a06"
     }
   ]
 }
