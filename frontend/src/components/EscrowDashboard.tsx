@@ -7,6 +7,8 @@ import { useReactivity } from '../hooks/useReactivity'
 import { EscrowStatus, ESCROW_STATUS_LABELS } from '../types/escrow'
 import { getExplorerAddressUrl } from '../lib/somnia'
 import LiveEventFeed from './LiveEventFeed'
+import ReactivityStats from './ReactivityStats'
+import ReactivityComparison from './ReactivityComparison'
 
 // ── Status badge ──────────────────────────────────────────────────────────────
 function StatusBadge({ status }: { status: EscrowStatus }) {
@@ -228,7 +230,10 @@ export default function EscrowDashboard() {
         </div>
       )}
 
-      {/* Stats */}
+      {/* Reactivity stats */}
+      <ReactivityStats />
+
+      {/* Escrow stats */}
       {!loadingClient && !loadingFreelancer && (
         <div className="grid grid-cols-3 gap-4">
           {[
@@ -293,6 +298,9 @@ export default function EscrowDashboard() {
           </div>
         )}
       </div>
+
+      {/* Reactivity comparison (collapsible) */}
+      <ReactivityComparison collapsible />
 
       {/* Live Somnia Reactivity feed */}
       <div className="pt-2" style={{ borderTop: '1px solid #1c1c1c' }}>

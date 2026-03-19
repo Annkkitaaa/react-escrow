@@ -10,6 +10,7 @@
     "deploy:testnet": "hardhat run scripts/deploy.ts --network somniaTestnet",
     "setup-subscriptions": "hardhat run scripts/setup-subscriptions.ts --network somniaTestnet",
     "seed": "hardhat run scripts/seed.ts --network somniaTestnet",
+    "seed-demo": "hardhat run scripts/seed-demo.ts --network somniaTestnet",
     "node": "hardhat node",
     "frontend": "cd frontend && npm run dev",
     "reactive-service": "cd reactive-service && npm run dev"

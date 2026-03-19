@@ -10,6 +10,7 @@ import {
 } from '../types/escrow'
 import { getExplorerAddressUrl, getExplorerTxUrl } from '../lib/somnia'
 import { loadCommitment } from '../lib/commitment'
+import ReactivityVisualizer from './ReactivityVisualizer'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function fmt(addr: string) { return `${addr.slice(0,6)}…${addr.slice(-4)}` }
@@ -758,6 +759,9 @@ export default function EscrowDetail() {
           ))}
         </div>
       </div>
+
+      {/* Reactive chain visualizer */}
+      <ReactivityVisualizer escrowId={escrow.id.toString()} />
 
       {/* Reactivity note */}
       <div

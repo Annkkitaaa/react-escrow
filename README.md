@@ -39,6 +39,36 @@ The same reactive pattern handles disputes (arbiter resolves → `DisputeResolve
 
 ---
 
+## Feature Highlights
+
+| Feature | What It Does | Reactive Triggers Used |
+|---|---|---|
+| **Proof-of-Delivery** | Freelancer submits deliverable hash; if it matches the committed hash, a challenge period starts. If unchallenged, funds auto-release. | `DeliverableVerified` → challenge timer → `MilestoneApproved` |
+| **Streaming Payments** | Milestones split into weighted checkpoints. Each checkpoint approval streams proportional payment to freelancer. | `CheckpointApproved` → `releaseCheckpointFunds()` per checkpoint |
+| **Hook Registry** | Modular post-release hooks. Any contract can register to execute on milestone completion. | Cascading calls from `ReactiveHandlers` → `HookRegistry` → registered hooks |
+| **NFT Receipts** | Non-transferable ERC721 minted automatically on every milestone release. On-chain proof of completed work. | Fired by `EscrowReceiptNFT` hook in same reactive callback |
+| **Reputation SBT** | Soulbound token tracking escrow history with Merkle proof verification. Prove your track record without revealing individual contracts. | Fired by `ReputationHook` on escrow completion |
+
+Every feature above executes **automatically via Somnia Reactivity** — no keeper bots, no user action, no off-chain triggers.
+
+---
+
+## Why Somnia Reactivity?
+
+ReactEscrow could not achieve the same guarantees on any other chain. Here's why:
+
+**Atomicity** — Fund release happens in the same block as milestone approval. Chainlink Keepers, Gelato, or any keeper-based system introduces at minimum a 1-block delay (often 30s–5min). On Somnia, the validator executes the callback atomically — there is no window where the milestone is approved but funds haven't moved.
+
+**Zero Infrastructure** — No keeper bots to deploy, monitor, fund, or maintain. No cron jobs. No off-chain trigger service. The reactive subscriptions are registered once and the chain handles everything. This eliminates an entire class of operational risk.
+
+**Sub-Cent Cost** — The 5-step reactive chain (release funds → mint NFT receipt → update reputation → execute hooks → update status) costs fractions of a cent on Somnia. On Ethereum, firing 5 contract calls in one flow would cost $20+. On L2s, still $0.50+. Somnia makes complex reactive chains economically viable.
+
+**Sub-Second Finality** — Streaming partial payments via checkpoint approvals work because each checkpoint payment confirms before the next one fires. On chains with 12s+ block times, streaming payments would batch awkwardly.
+
+**Protocol-Level Trust** — The reactive callback is executed by Somnia validators, not by a third-party keeper network. The trust assumption is the same as the chain's consensus — you trust the validators to execute blocks correctly, and the reactive callback is part of that execution.
+
+---
+
 ## Live Deployment (Somnia Testnet)
 
 | Contract | Address |
@@ -147,6 +177,36 @@ Four subscriptions registered via `setup-subscriptions.ts`:
 | `DeadlineReached` | calls `executeTimeoutRelease()` → timeout auto-release |
 | `DisputeResolved` | calls `executeResolutionDistribution()` → split per arbiter ruling |
 | `CheckpointApproved` | calls `releaseCheckpointFunds()` → partial streaming payment |
+
+---
+
+## Reactive Subscription Map
+
+Every event emitted by ReactEscrow triggers a cascade of automatic actions via Somnia Reactivity:
+
+```
+ReactEscrow Events                    ReactiveHandlers Actions
+──────────────────                    ────────────────────────
+MilestoneApproved ──────────────────► releaseMilestoneFunds()
+                                           │
+                                           ├──► HookRegistry.executePostReleaseHooks()
+                                           │         ├──► EscrowReceiptNFT.mint()
+                                           │         └──► ReputationHook.update()
+                                           │
+CheckpointApproved ─────────────────► releaseCheckpointFunds()
+                                           │
+                                           └──► HookRegistry.executePostReleaseHooks()
+
+DeadlineReached ────────────────────► executeTimeoutRelease()
+
+DisputeResolved ────────────────────► executeResolutionDistribution()
+
+DeliverableVerified ────────────────► (starts challenge period countdown)
+                                           │
+                                           └──► on expiry: MilestoneApproved (re-enters flow above)
+```
+
+**5 event types → 8+ reactive actions → zero human intervention after the triggering transaction.**
 
 ---
 

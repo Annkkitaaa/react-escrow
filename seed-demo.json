@@ -1,0 +1,26 @@
+{
+  "network": "somniaTestnet",
+  "chainId": "50312",
+  "seededAt": "2026-03-19T14:25:02.121Z",
+  "wallets": {
+    "client": "0x984a1dB53b989fd3977bf07EF4cae068BDE17bd4",
+    "freelancer": "0x5a2788FE799fa0Cd9321f450A720bbBe4fACfe40",
+    "arbiter": "0x984a1dB53b989fd3977bf07EF4cae068BDE17bd4"
+  },
+  "escrows": [
+    {
+      "id": "4",
+      "label": "Standard — 3 milestones, M0 submitted, awaiting client approval"
+    },
+    {
+      "id": "5",
+      "label": "Proof-of-Delivery — hash submitted, ~60s challenge period",
+      "deliverableText": "design-v1-final.pdf",
+      "deliverableHash": "0xf3bdf402dd65e7450b45f4699499548b6282597b81d96d0324b4980d38e973e3"
+    },
+    {
+      "id": "6",
+      "label": "Streaming — 1 milestone × 4 checkpoints at 25% each"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom'
 import { useWallet } from '../hooks/useWallet'
+import ReactivityComparison from './ReactivityComparison'
 
 // ── Inline icons (no extra deps) ──────────────────────────────────────────────
 function MetaMaskIcon() {
@@ -25,34 +26,11 @@ function CheckIcon() {
   )
 }
 
-function ShieldIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-    </svg>
-  )
-}
-
-function ZapIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-    </svg>
-  )
-}
-
-function CoinsIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/>
-    </svg>
-  )
-}
-
-const FEATURES = [
-  { icon: <ShieldIcon />, label: 'Trustless milestone escrow', sub: 'Smart contract enforced' },
-  { icon: <ZapIcon />,    label: 'Somnia Native Reactivity',   sub: 'Real-time push events' },
-  { icon: <CoinsIcon />,  label: 'Auto-release on approval',   sub: 'No manual settlement' },
+const KEY_STATS = [
+  { value: '168+',  label: 'Tests Passing' },
+  { value: '5',     label: 'Reactive Event Types' },
+  { value: '6',     label: 'Deployed Contracts' },
+  { value: '0',     label: 'Off-Chain Infrastructure Required' },
 ]
 
 export default function WalletConnect() {
@@ -63,7 +41,9 @@ export default function WalletConnect() {
   const noMetaMask = typeof window !== 'undefined' && !window.ethereum
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
+    <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 gap-12">
+
+      {/* ── Hero section ── */}
       <div className="w-full max-w-4xl grid md:grid-cols-2 gap-10 items-center">
 
         {/* ── Left: hero copy ── */}
@@ -76,25 +56,32 @@ export default function WalletConnect() {
             Somnia Reactivity Mini Hackathon
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight tracking-tight">
-            Milestone Escrow,<br />
-            <span style={{ color: '#ff6b00' }}>Reactive</span> by Default
-          </h1>
+          <div>
+            <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight tracking-tight">
+              ReactEscrow
+            </h1>
+            <p className="text-xl font-semibold mt-2" style={{ color: '#ff8c24' }}>
+              Trustless Milestone Payments<br />Powered by Somnia Reactivity
+            </p>
+            <p className="text-gray-500 text-sm mt-3 leading-relaxed">
+              No keeper bots. No polling. No manual releases.<br />
+              Funds move the instant conditions are met.
+            </p>
+          </div>
 
-          <p className="text-gray-400 text-lg leading-relaxed">
-            Trustless freelance payments backed by on-chain automation.
-            Funds release the moment milestones are approved — no middlemen, no delays.
-          </p>
-
-          <ul className="space-y-3">
-            {FEATURES.map(f => (
-              <li key={f.label} className="flex items-center gap-3">
-                <span style={{ color: '#ff6b00' }}>{f.icon}</span>
-                <span className="text-white text-sm font-medium">{f.label}</span>
-                <span className="text-gray-600 text-sm">— {f.sub}</span>
-              </li>
+          {/* Key stats */}
+          <div className="grid grid-cols-2 gap-3">
+            {KEY_STATS.map(s => (
+              <div
+                key={s.label}
+                className="rounded-xl px-4 py-3"
+                style={{ backgroundColor: '#141414', border: '1px solid #252525' }}
+              >
+                <p className="text-xl font-bold text-white tabular-nums">{s.value}</p>
+                <p className="text-xs text-gray-500 mt-0.5 leading-tight">{s.label}</p>
+              </div>
             ))}
-          </ul>
+          </div>
 
           <div className="flex items-center gap-2 text-xs text-gray-500">
             <span
@@ -204,6 +191,12 @@ export default function WalletConnect() {
           )}
         </div>
       </div>
+
+      {/* ── Comparison section (visible before connecting) ── */}
+      <div className="w-full max-w-4xl">
+        <ReactivityComparison />
+      </div>
+
     </div>
   )
 }
