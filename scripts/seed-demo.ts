@@ -176,7 +176,11 @@ async function main() {
     const cpWeights      = [25, 25, 25, 25]
     await (await escrow.connect(client).addMilestoneCheckpoints(id3, 0, cpDescriptions, cpWeights)).wait()
     console.log(`   4 checkpoints added (25% each) ✓`)
-    console.log(`   → DEMO: open this escrow as client and approve checkpoints one by one`)
+
+    // Pre-submit checkpoint 0 so the client sees an Approve button immediately
+    await (await escrow.connect(freelancer).submitCheckpoint(id3, 0, 0)).wait()
+    console.log(`   Checkpoint 0 (Phase 1 — Research) pre-submitted by freelancer ✓`)
+    console.log(`   → DEMO: open this escrow as client and click Approve Checkpoint`)
   } catch (e) {
     console.log(`   Note: checkpoints skipped (${(e as Error).message.slice(0, 80)})`)
   }
@@ -194,7 +198,7 @@ async function main() {
     escrows: [
       { id: id1.toString(), label: 'Standard — 3 milestones, M0 submitted, awaiting client approval' },
       { id: id2.toString(), label: 'Proof-of-Delivery — hash submitted, ~60s challenge period', deliverableText: DELIVERABLE_TEXT, deliverableHash },
-      { id: id3.toString(), label: 'Streaming — 1 milestone × 4 checkpoints at 25% each' },
+      { id: id3.toString(), label: 'Streaming — 1 milestone × 4 checkpoints at 25% each, CP0 pre-submitted' },
     ],
   }
 

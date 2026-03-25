@@ -10,9 +10,7 @@ ReactEscrow lets a client lock funds on-chain for a freelancer across multiple m
 
 ## Demo Video
 
-> **TODO:** Replace this placeholder with the actual demo video link after recording.
-
-**[▶ Watch Demo](YOUR_VIDEO_URL_HERE)** ← replace with YouTube / Loom link
+**[▶ Watch Demo](https://youtu.be/USLR_t_MAYk?si=G-_-ChzLv6hg41J-)**
 
 ---
 

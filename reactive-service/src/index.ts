@@ -9,7 +9,7 @@
 // ============================================================
 
 import { WebSocketServer, WebSocket } from 'ws'
-import { createPublicClient, webSocket as viemWebSocket, defineChain } from 'viem'
+import { createPublicClient, webSocket as viemWebSocket, http as viemHttp, defineChain } from 'viem'
 import { SDK } from '@somnia-chain/reactivity'
 import { config } from './config'
 import { parseReactiveEvent, type ParsedEvent } from './handlers'
@@ -62,6 +62,7 @@ function broadcast(event: ParsedEvent): void {
 
 let retryCount = 0
 const MAX_RETRY_DELAY_MS = 30_000
+let httpPollingActive = false
 
 function retryDelay(): number {
   return Math.min(1_000 * Math.pow(2, retryCount), MAX_RETRY_DELAY_MS)
@@ -135,8 +136,8 @@ async function startReactivitySubscription(): Promise<void> {
       process.exit(0)
     })
 
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err)
+  } catch (err: any) {
+    const msg = err?.message ?? err?.[Symbol.for('kMessage')] ?? 'connection error'
     console.error(`[ReactiveService] Connection failed: ${msg}`)
     scheduleRetry()
   }
@@ -145,8 +146,52 @@ async function startReactivitySubscription(): Promise<void> {
 function scheduleRetry(): void {
   retryCount++
   const delay = retryDelay()
-  console.log(`[ReactiveService] Retrying in ${delay / 1000}s (attempt ${retryCount})…`)
+  console.log(`[ReactiveService] WS unavailable — retrying in ${delay / 1000}s (attempt ${retryCount})`)
+
+  // After 3 WS failures, activate HTTP polling so events still reach the frontend
+  if (retryCount === 3) {
+    startHttpPollingFallback()
+  }
+
   setTimeout(() => startReactivitySubscription(), delay)
+}
+
+// ── HTTP polling fallback (used when WS is unavailable) ───────────────────────
+// Uses viem watchEvent over HTTP — polls every 2s, decodes the same events.
+// Automatically stops if WS reconnects (httpPollingActive flag).
+function startHttpPollingFallback(): void {
+  if (httpPollingActive) return
+  const escrowAddress = config.contracts.reactEscrow
+  if (!escrowAddress) return
+
+  httpPollingActive = true
+  console.log('[ReactiveService] HTTP polling fallback active (2s interval) — events will still flow')
+
+  const httpClient = createPublicClient({
+    chain: somniaChain,
+    transport: viemHttp(config.somnia.rpcUrl),
+  })
+
+  httpClient.watchEvent({
+    address: escrowAddress,
+    onLogs: (logs) => {
+      for (const log of logs) {
+        const event = parseReactiveEvent({
+          result: { topics: log.topics as string[], data: log.data, simulationResults: [] },
+        })
+        if (event) {
+          event.blockNumber = log.blockNumber?.toString()
+          broadcast(event)
+          if (event.type === 'FundsReleased' && event.address && event.amount) {
+            recordEscrowCompletion(event.address, BigInt(event.escrowId), BigInt(event.amount))
+              .catch(e => console.error('[Merkle] error:', e))
+          }
+        }
+      }
+    },
+    onError: (e) => console.warn('[ReactiveService] HTTP polling error:', e.message),
+    pollingInterval: 2_000,
+  })
 }
 
 // ── Bootstrap ─────────────────────────────────────────────────────────────────
